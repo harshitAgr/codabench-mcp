@@ -2,7 +2,6 @@
 from __future__ import annotations
 
 import httpx
-import pytest
 
 from codabench_mcp.errors import CodabenchToolError, redact_token, translate_http_error
 

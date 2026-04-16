@@ -18,7 +18,6 @@ from mcp.server.fastmcp import FastMCP
 
 from .client import CodabenchClient
 
-
 DEFAULT_BASE_URL = "https://www.codabench.org"
 
 
