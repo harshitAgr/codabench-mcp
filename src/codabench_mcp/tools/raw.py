@@ -13,7 +13,6 @@ from mcp.server.fastmcp import FastMCP
 from ..client import CodabenchClient
 from ..errors import CodabenchToolError
 
-
 _READ_METHODS = {"GET", "HEAD", "OPTIONS"}
 
 

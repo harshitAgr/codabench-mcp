@@ -5,6 +5,7 @@ import pytest
 from mcp.server.fastmcp import FastMCP
 
 from codabench_mcp.client import CodabenchClient
+from codabench_mcp.errors import CodabenchToolError
 from codabench_mcp.tools import submissions
 from tests.conftest import BASE_URL, TOKEN
 
@@ -123,7 +124,7 @@ async def test_submit_to_phase_runs_full_upload_flow(
 async def test_submit_to_phase_rejects_missing_bundle(mcp, client):
     submissions.register(mcp, client)
     tool = mcp._tool_manager.get_tool("submit_to_phase")
-    with pytest.raises(Exception):
+    with pytest.raises(CodabenchToolError):
         await tool.fn(phase_id=1, bundle_path="/tmp/does-not-exist-12345.zip")
 
 

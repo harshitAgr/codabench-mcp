@@ -10,7 +10,6 @@ from mcp.server.fastmcp import FastMCP
 from ..client import CodabenchClient
 from ..errors import CodabenchToolError
 
-
 DEFAULT_MAX_BYTES = 5 * 1024 * 1024 * 1024  # 5 GB
 
 
