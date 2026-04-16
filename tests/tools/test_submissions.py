@@ -66,3 +66,62 @@ async def test_get_submission_logs(mcp, client, respx_mock):
     tool = mcp._tool_manager.get_tool("get_submission_logs")
     result = await tool.fn(submission_id=100)
     assert result["stdout"] == "hello"
+
+
+async def test_submit_to_phase_runs_full_upload_flow(
+    mcp, client, tmp_path, respx_mock
+):
+    bundle = tmp_path / "model.zip"
+    bundle.write_bytes(b"PK\x03\x04fake-zip")
+
+    sassy_url = "https://storage.googleapis.com/bucket/file?sig=xyz"
+
+    create_data = respx_mock.post("/api/data/").mock(
+        return_value=httpx.Response(
+            201, json={"key": "new-key-abc", "sassy_url": sassy_url}
+        )
+    )
+    finalize = respx_mock.put("/api/data/upload_completed/new-key-abc/").mock(
+        return_value=httpx.Response(200, json={"ok": True})
+    )
+    create_sub = respx_mock.post("/api/submissions/").mock(
+        return_value=httpx.Response(
+            201, json={"id": 200, "status": "submitted", "data": "new-key-abc"}
+        )
+    )
+
+    import respx as _respx
+
+    submissions.register(mcp, client)
+    tool = mcp._tool_manager.get_tool("submit_to_phase")
+
+    with _respx.mock(assert_all_called=True) as m:
+        upload = m.put(sassy_url).mock(return_value=httpx.Response(200))
+        result = await tool.fn(
+            phase_id=10,
+            bundle_path=str(bundle),
+            description="first try",
+            task_ids=[7, 8],
+        )
+        assert upload.call_count == 1
+
+    assert create_data.call_count == 1
+    assert finalize.call_count == 1
+    assert create_sub.call_count == 1
+    assert result["submission_id"] == 200
+    assert result["status"] == "submitted"
+
+    import json
+    sub_req = create_sub.calls.last.request
+    body = json.loads(sub_req.content)
+    assert body["data"] == "new-key-abc"
+    assert body["phase"] == 10
+    assert body["tasks"] == [7, 8]
+    assert body["description"] == "first try"
+
+
+async def test_submit_to_phase_rejects_missing_bundle(mcp, client):
+    submissions.register(mcp, client)
+    tool = mcp._tool_manager.get_tool("submit_to_phase")
+    with pytest.raises(Exception):
+        await tool.fn(phase_id=1, bundle_path="/tmp/does-not-exist-12345.zip")
