@@ -1,4 +1,5 @@
 """Dataset download tool."""
+
 from __future__ import annotations
 
 import os
@@ -29,16 +30,12 @@ def register(mcp: FastMCP, client: CodabenchClient) -> None:
     ) -> dict[str, Any]:
         dest = Path(dest_path)
         if not dest.is_absolute():
-            raise CodabenchToolError(
-                f"dest_path must be absolute: got {dest_path!r}"
-            )
+            raise CodabenchToolError(f"dest_path must be absolute: got {dest_path!r}")
         if dest.exists() and not overwrite:
             raise CodabenchToolError(
                 f"dest_path {dest_path!r} exists; pass overwrite=True to replace"
             )
-        max_bytes = int(
-            os.environ.get("CODABENCH_MAX_DOWNLOAD_BYTES", DEFAULT_MAX_BYTES)
-        )
+        max_bytes = int(os.environ.get("CODABENCH_MAX_DOWNLOAD_BYTES", DEFAULT_MAX_BYTES))
         return await client.stream_to_file(
             f"/api/datasets/{key}/download/", dest, max_bytes=max_bytes
         )

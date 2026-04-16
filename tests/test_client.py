@@ -1,4 +1,5 @@
 """Tests for CodabenchClient."""
+
 from __future__ import annotations
 
 import hashlib
@@ -30,9 +31,7 @@ async def test_get_attaches_token_header(client, respx_mock):
 
 
 async def test_get_prepends_base_url_when_path_is_relative(client, respx_mock):
-    respx_mock.get("/api/competitions/5/").mock(
-        return_value=httpx.Response(200, json={"id": 5})
-    )
+    respx_mock.get("/api/competitions/5/").mock(return_value=httpx.Response(200, json={"id": 5}))
     data = await client.get("/api/competitions/5/")
     assert data == {"id": 5}
 
@@ -52,7 +51,7 @@ async def test_post_json_body(client, respx_mock):
     data = await client.post("/api/submissions/", json={"phase": 1, "data": "abc"})
     assert data == {"id": 42}
     sent = route.calls.last.request
-    assert b'"phase"' in sent.content and b'1' in sent.content
+    assert b'"phase"' in sent.content and b"1" in sent.content
 
 
 async def test_put_absolute_url_bypasses_base_url_and_auth(client, respx_mock):
@@ -91,9 +90,7 @@ async def test_no_retry_on_4xx(client, respx_mock):
     assert route.call_count == 1
 
 
-async def test_stream_to_file_writes_bytes_and_computes_sha256(
-    client, respx_mock, tmp_path: Path
-):
+async def test_stream_to_file_writes_bytes_and_computes_sha256(client, respx_mock, tmp_path: Path):
     payload = b"hello world" * 1000
     respx_mock.get("/api/datasets/abc/download/").mock(
         return_value=httpx.Response(
@@ -101,26 +98,18 @@ async def test_stream_to_file_writes_bytes_and_computes_sha256(
         )
     )
     dest = tmp_path / "out.bin"
-    result = await client.stream_to_file(
-        "/api/datasets/abc/download/", dest, max_bytes=10_000_000
-    )
+    result = await client.stream_to_file("/api/datasets/abc/download/", dest, max_bytes=10_000_000)
     assert dest.read_bytes() == payload
     assert result["bytes_written"] == len(payload)
     assert result["sha256"] == hashlib.sha256(payload).hexdigest()
     assert result["path"] == str(dest)
 
 
-async def test_stream_to_file_rejects_oversized_response(
-    client, respx_mock, tmp_path: Path
-):
+async def test_stream_to_file_rejects_oversized_response(client, respx_mock, tmp_path: Path):
     respx_mock.get("/api/datasets/big/download/").mock(
-        return_value=httpx.Response(
-            200, content=b"x", headers={"Content-Length": "999999999"}
-        )
+        return_value=httpx.Response(200, content=b"x", headers={"Content-Length": "999999999"})
     )
     dest = tmp_path / "out.bin"
     with pytest.raises(CodabenchToolError, match="exceeds max"):
-        await client.stream_to_file(
-            "/api/datasets/big/download/", dest, max_bytes=1024
-        )
+        await client.stream_to_file("/api/datasets/big/download/", dest, max_bytes=1024)
     assert not dest.exists()

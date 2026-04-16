@@ -7,6 +7,7 @@ Responsibilities:
 - Register all tool modules on a FastMCP instance
 - Run the server over stdio
 """
+
 from __future__ import annotations
 
 import logging
@@ -51,9 +52,7 @@ def configure_logging() -> None:
     for h in list(logger.handlers):
         logger.removeHandler(h)
     handler = logging.StreamHandler(stream=sys.stderr)
-    handler.setFormatter(
-        logging.Formatter("%(asctime)s %(levelname)s %(name)s: %(message)s")
-    )
+    handler.setFormatter(logging.Formatter("%(asctime)s %(levelname)s %(name)s: %(message)s"))
     logger.addHandler(handler)
     logger.setLevel(logging.INFO)
     logger.propagate = False

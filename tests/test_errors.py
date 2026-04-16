@@ -1,4 +1,5 @@
 """Tests for error translation and token redaction."""
+
 from __future__ import annotations
 
 import httpx
@@ -37,9 +38,7 @@ def test_translate_404_echoes_resource():
 
 
 def test_translate_429_includes_retry_after():
-    response = httpx.Response(
-        429, text="", headers={"Retry-After": "30"}
-    )
+    response = httpx.Response(429, text="", headers={"Retry-After": "30"})
     err = translate_http_error(response, request_summary="GET /api/competitions/")
     assert "30" in str(err)
     assert "rate" in str(err).lower()

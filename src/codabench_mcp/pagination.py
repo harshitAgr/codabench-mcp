@@ -4,6 +4,7 @@ Codabench uses DRF's PageNumberPagination which returns
 {count, next, previous, results}. Some endpoints return raw lists instead;
 this helper handles both shapes.
 """
+
 from __future__ import annotations
 
 from typing import Any

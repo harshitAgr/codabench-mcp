@@ -1,4 +1,5 @@
 """Submission tools: list, get, logs, submit (3-step), poll."""
+
 from __future__ import annotations
 
 from typing import Any
@@ -20,9 +21,7 @@ def register(mcp: FastMCP, client: CodabenchClient) -> None:
         params: dict[str, Any] = {"mine": "true", "page_size": page_size}
         if phase is not None:
             params["phase"] = str(phase)
-        return await paginate(
-            client, "/api/submissions/", params=params, max_pages=max_pages
-        )
+        return await paginate(client, "/api/submissions/", params=params, max_pages=max_pages)
 
     @mcp.tool(description="Get full details of a submission including scores.")
     async def get_submission(submission_id: int) -> dict[str, Any]:
@@ -51,9 +50,7 @@ def register(mcp: FastMCP, client: CodabenchClient) -> None:
 
         bundle = Path(bundle_path)
         if not bundle.is_absolute():
-            raise CodabenchToolError(
-                f"bundle_path must be absolute: got {bundle_path!r}"
-            )
+            raise CodabenchToolError(f"bundle_path must be absolute: got {bundle_path!r}")
         if not bundle.is_file():
             raise CodabenchToolError(f"bundle not found: {bundle_path!r}")
 

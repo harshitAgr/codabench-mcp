@@ -1,4 +1,5 @@
 """Tests for server bootstrap, env parsing, and logging configuration."""
+
 from __future__ import annotations
 
 import logging

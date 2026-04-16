@@ -23,9 +23,7 @@ def mcp():
 
 
 async def test_codabench_request_allows_get_by_default(mcp, client, respx_mock):
-    respx_mock.get("/api/anything/").mock(
-        return_value=httpx.Response(200, json={"hello": "world"})
-    )
+    respx_mock.get("/api/anything/").mock(return_value=httpx.Response(200, json={"hello": "world"}))
     raw.register(mcp, client, allow_write=False)
     tool = mcp._tool_manager.get_tool("codabench_request")
     result = await tool.fn(method="GET", path="/api/anything/")
@@ -41,9 +39,7 @@ async def test_codabench_request_blocks_post_without_allow_write(mcp, client):
 
 
 async def test_codabench_request_allows_post_when_allow_write(mcp, client, respx_mock):
-    respx_mock.post("/api/thing/").mock(
-        return_value=httpx.Response(201, json={"id": 1})
-    )
+    respx_mock.post("/api/thing/").mock(return_value=httpx.Response(201, json={"id": 1}))
     raw.register(mcp, client, allow_write=True)
     tool = mcp._tool_manager.get_tool("codabench_request")
     result = await tool.fn(method="POST", path="/api/thing/", body={"name": "x"})

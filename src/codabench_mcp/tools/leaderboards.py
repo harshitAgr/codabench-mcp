@@ -1,4 +1,5 @@
 """Leaderboard + my-profile tools."""
+
 from __future__ import annotations
 
 from typing import Any

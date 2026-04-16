@@ -32,9 +32,7 @@ async def test_download_dataset_rejects_relative_path(mcp, client, tmp_path):
         await tool.fn(key="abc", dest_path="relative/out.zip")
 
 
-async def test_download_dataset_refuses_overwrite_without_flag(
-    mcp, client, tmp_path, respx_mock
-):
+async def test_download_dataset_refuses_overwrite_without_flag(mcp, client, tmp_path, respx_mock):
     existing = tmp_path / "out.zip"
     existing.write_bytes(b"old")
     data.register(mcp, client)
@@ -43,9 +41,7 @@ async def test_download_dataset_refuses_overwrite_without_flag(
         await tool.fn(key="abc", dest_path=str(existing), overwrite=False)
 
 
-async def test_download_dataset_writes_file_and_returns_sha256(
-    mcp, client, tmp_path, respx_mock
-):
+async def test_download_dataset_writes_file_and_returns_sha256(mcp, client, tmp_path, respx_mock):
     payload = b"DATASET" * 500
     respx_mock.get("/api/datasets/abc/download/").mock(
         return_value=httpx.Response(

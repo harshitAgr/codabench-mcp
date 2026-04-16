@@ -4,6 +4,7 @@ Exposes arbitrary REST access. Non-GET methods are blocked unless the
 server was started with CODABENCH_ALLOW_WRITE_RAW=1 — this prevents the
 agent from issuing accidental destructive writes (DELETE, PATCH, etc.).
 """
+
 from __future__ import annotations
 
 from typing import Any
@@ -34,9 +35,7 @@ def register(mcp: FastMCP, client: CodabenchClient, *, allow_write: bool) -> Non
     ) -> dict[str, Any]:
         upper = method.strip().upper()
         if not path.startswith("/api/"):
-            raise CodabenchToolError(
-                f"path must start with '/api/': got {path!r}"
-            )
+            raise CodabenchToolError(f"path must start with '/api/': got {path!r}")
         if upper not in _READ_METHODS and not allow_write:
             raise CodabenchToolError(
                 f"Method {upper} blocked. Set CODABENCH_ALLOW_WRITE_RAW=1 "

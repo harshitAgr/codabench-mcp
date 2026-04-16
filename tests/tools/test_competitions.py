@@ -1,4 +1,5 @@
 """Tests for competition/phase/task tools."""
+
 from __future__ import annotations
 
 import httpx

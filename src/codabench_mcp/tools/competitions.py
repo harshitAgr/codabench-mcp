@@ -1,4 +1,5 @@
 """Competition, phase, and task reading tools."""
+
 from __future__ import annotations
 
 from typing import Any
@@ -11,11 +12,7 @@ from ..pagination import paginate
 
 def register(mcp: FastMCP, client: CodabenchClient) -> None:
 
-    @mcp.tool(
-        description=(
-            "Search public Codabench competitions. Auto-paginates up to max_pages."
-        )
-    )
+    @mcp.tool(description=("Search public Codabench competitions. Auto-paginates up to max_pages."))
     async def search_competitions(
         q: str | None = None,
         public: bool = True,
@@ -27,18 +24,14 @@ def register(mcp: FastMCP, client: CodabenchClient) -> None:
             params["search"] = q
         if public:
             params["public"] = "true"
-        return await paginate(
-            client, "/api/competitions/", params=params, max_pages=max_pages
-        )
+        return await paginate(client, "/api/competitions/", params=params, max_pages=max_pages)
 
     @mcp.tool(description="Get full details of a single Codabench competition.")
     async def get_competition(competition_id: int) -> dict[str, Any]:
         return await client.get(f"/api/competitions/{competition_id}/")
 
     @mcp.tool(description="List all phases of a Codabench competition.")
-    async def list_competition_phases(
-        competition_id: int, max_pages: int = 10
-    ) -> dict[str, Any]:
+    async def list_competition_phases(competition_id: int, max_pages: int = 10) -> dict[str, Any]:
         return await paginate(
             client,
             "/api/phases/",
@@ -72,9 +65,7 @@ def register(mcp: FastMCP, client: CodabenchClient) -> None:
         }
 
     @mcp.tool(description="List all tasks attached to a Codabench competition.")
-    async def list_competition_tasks(
-        competition_id: int, max_pages: int = 10
-    ) -> dict[str, Any]:
+    async def list_competition_tasks(competition_id: int, max_pages: int = 10) -> dict[str, Any]:
         return await paginate(
             client,
             "/api/tasks/",
@@ -82,8 +73,6 @@ def register(mcp: FastMCP, client: CodabenchClient) -> None:
             max_pages=max_pages,
         )
 
-    @mcp.tool(
-        description="Get full details of a single task, including dataset keys."
-    )
+    @mcp.tool(description="Get full details of a single task, including dataset keys.")
     async def get_task(task_id: int) -> dict[str, Any]:
         return await client.get(f"/api/tasks/{task_id}/")

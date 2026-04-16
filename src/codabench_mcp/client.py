@@ -7,6 +7,7 @@ Centralises:
 - Single delayed retry on 5xx responses
 - Streaming downloads with size caps and SHA-256
 """
+
 from __future__ import annotations
 
 import asyncio
@@ -61,9 +62,7 @@ class CodabenchClient:
         try:
             resp = await _do()
             if 500 <= resp.status_code < 600:
-                log.warning(
-                    "5xx on %s, retrying once in %.1fs", summary, _RETRY_DELAY_SECONDS
-                )
+                log.warning("5xx on %s, retrying once in %.1fs", summary, _RETRY_DELAY_SECONDS)
                 await asyncio.sleep(_RETRY_DELAY_SECONDS)
                 resp = await _do()
         except httpx.HTTPError as exc:
@@ -111,9 +110,7 @@ class CodabenchClient:
         if resp.status_code >= 400:
             raise translate_http_error(resp, request_summary=f"PUT {url}")
 
-    async def stream_to_file(
-        self, path: str, dest: Path, *, max_bytes: int
-    ) -> dict[str, Any]:
+    async def stream_to_file(self, path: str, dest: Path, *, max_bytes: int) -> dict[str, Any]:
         """Stream a GET response to `dest`, computing SHA-256 on the fly.
 
         Aborts and deletes `dest` if the server-reported Content-Length

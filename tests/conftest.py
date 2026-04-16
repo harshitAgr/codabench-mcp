@@ -1,4 +1,5 @@
 """Shared pytest fixtures for respx-based HTTP mocking."""
+
 from __future__ import annotations
 
 import pytest

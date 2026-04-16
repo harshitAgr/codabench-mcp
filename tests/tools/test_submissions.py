@@ -69,18 +69,14 @@ async def test_get_submission_logs(mcp, client, respx_mock):
     assert result["stdout"] == "hello"
 
 
-async def test_submit_to_phase_runs_full_upload_flow(
-    mcp, client, tmp_path, respx_mock
-):
+async def test_submit_to_phase_runs_full_upload_flow(mcp, client, tmp_path, respx_mock):
     bundle = tmp_path / "model.zip"
     bundle.write_bytes(b"PK\x03\x04fake-zip")
 
     sassy_url = "https://storage.googleapis.com/bucket/file?sig=xyz"
 
     create_data = respx_mock.post("/api/data/").mock(
-        return_value=httpx.Response(
-            201, json={"key": "new-key-abc", "sassy_url": sassy_url}
-        )
+        return_value=httpx.Response(201, json={"key": "new-key-abc", "sassy_url": sassy_url})
     )
     finalize = respx_mock.put("/api/data/upload_completed/new-key-abc/").mock(
         return_value=httpx.Response(200, json={"ok": True})
@@ -113,6 +109,7 @@ async def test_submit_to_phase_runs_full_upload_flow(
     assert result["status"] == "submitted"
 
     import json
+
     sub_req = create_sub.calls.last.request
     body = json.loads(sub_req.content)
     assert body["data"] == "new-key-abc"
@@ -128,13 +125,9 @@ async def test_submit_to_phase_rejects_missing_bundle(mcp, client):
         await tool.fn(phase_id=1, bundle_path="/tmp/does-not-exist-12345.zip")
 
 
-async def test_poll_submission_returns_immediately_on_terminal_state(
-    mcp, client, respx_mock
-):
+async def test_poll_submission_returns_immediately_on_terminal_state(mcp, client, respx_mock):
     respx_mock.get("/api/submissions/200/").mock(
-        return_value=httpx.Response(
-            200, json={"id": 200, "status": "finished", "scores": []}
-        )
+        return_value=httpx.Response(200, json={"id": 200, "status": "finished", "scores": []})
     )
     submissions.register(mcp, client)
     tool = mcp._tool_manager.get_tool("poll_submission")
@@ -144,14 +137,10 @@ async def test_poll_submission_returns_immediately_on_terminal_state(
 
 async def test_poll_submission_times_out_without_error(mcp, client, respx_mock):
     respx_mock.get("/api/submissions/200/").mock(
-        return_value=httpx.Response(
-            200, json={"id": 200, "status": "running"}
-        )
+        return_value=httpx.Response(200, json={"id": 200, "status": "running"})
     )
     submissions.register(mcp, client)
     tool = mcp._tool_manager.get_tool("poll_submission")
-    result = await tool.fn(
-        submission_id=200, timeout_seconds=0.3, interval_seconds=0.1
-    )
+    result = await tool.fn(submission_id=200, timeout_seconds=0.3, interval_seconds=0.1)
     assert result["status"] == "still_running"
     assert result["submission_id"] == 200
