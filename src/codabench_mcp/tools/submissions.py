@@ -91,3 +91,44 @@ def register(mcp: FastMCP, client: CodabenchClient) -> None:
             "data_key": key,
             "raw": submission,
         }
+
+    @mcp.tool(
+        description=(
+            "Poll a submission until it reaches a terminal state "
+            "(finished/failed/cancelled) or `timeout_seconds` elapses. "
+            "Returns the final submission record, or {status: 'still_running'} "
+            "on timeout — the agent can choose to poll again."
+        )
+    )
+    async def poll_submission(
+        submission_id: int,
+        timeout_seconds: float = 600.0,
+        interval_seconds: float = 5.0,
+    ) -> dict[str, Any]:
+        import asyncio
+        import time
+
+        terminal = {"finished", "failed", "cancelled"}
+        max_interval = interval_seconds * 6
+        start = time.monotonic()
+        wait = interval_seconds
+
+        while True:
+            sub = await client.get(f"/api/submissions/{submission_id}/")
+            status = str(sub.get("status", "")).lower()
+            if status in terminal:
+                return sub
+
+            elapsed = time.monotonic() - start
+            remaining = timeout_seconds - elapsed
+            if remaining <= 0:
+                return {
+                    "submission_id": submission_id,
+                    "status": "still_running",
+                    "last_observed_status": status,
+                    "elapsed_seconds": elapsed,
+                }
+
+            sleep_for = min(wait, remaining)
+            await asyncio.sleep(sleep_for)
+            wait = min(wait * 1.5, max_interval)

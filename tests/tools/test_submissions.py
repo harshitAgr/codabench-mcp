@@ -125,3 +125,32 @@ async def test_submit_to_phase_rejects_missing_bundle(mcp, client):
     tool = mcp._tool_manager.get_tool("submit_to_phase")
     with pytest.raises(Exception):
         await tool.fn(phase_id=1, bundle_path="/tmp/does-not-exist-12345.zip")
+
+
+async def test_poll_submission_returns_immediately_on_terminal_state(
+    mcp, client, respx_mock
+):
+    respx_mock.get("/api/submissions/200/").mock(
+        return_value=httpx.Response(
+            200, json={"id": 200, "status": "finished", "scores": []}
+        )
+    )
+    submissions.register(mcp, client)
+    tool = mcp._tool_manager.get_tool("poll_submission")
+    result = await tool.fn(submission_id=200, timeout_seconds=1, interval_seconds=0.1)
+    assert result["status"] == "finished"
+
+
+async def test_poll_submission_times_out_without_error(mcp, client, respx_mock):
+    respx_mock.get("/api/submissions/200/").mock(
+        return_value=httpx.Response(
+            200, json={"id": 200, "status": "running"}
+        )
+    )
+    submissions.register(mcp, client)
+    tool = mcp._tool_manager.get_tool("poll_submission")
+    result = await tool.fn(
+        submission_id=200, timeout_seconds=0.3, interval_seconds=0.1
+    )
+    assert result["status"] == "still_running"
+    assert result["submission_id"] == 200
