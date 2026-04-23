@@ -77,7 +77,22 @@ uv run codabench-mcp  # requires CODABENCH_API_TOKEN
 }
 ```
 
-### Claude Code
+### Claude Code (plugin marketplace)
+
+```shell
+/plugin marketplace add harshitAgr/codabench-mcp
+/plugin install codabench-mcp@codabench-mcp
+```
+
+Then export your token in the shell where you launch Claude Code:
+
+```bash
+export CODABENCH_API_TOKEN=paste-your-token-here
+```
+
+### Claude Code (manual)
+
+If you'd rather skip the plugin layer:
 
 ```bash
 claude mcp add codabench \

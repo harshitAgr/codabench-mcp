@@ -1,0 +1,11 @@
+{
+  "mcpServers": {
+    "codabench": {
+      "command": "uvx",
+      "args": ["codabench-mcp"],
+      "env": {
+        "CODABENCH_API_TOKEN": "${CODABENCH_API_TOKEN}"
+      }
+    }
+  }
+}
