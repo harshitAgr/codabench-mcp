@@ -106,3 +106,5 @@ uv run ruff format --check .               # format check
 ## License
 
 MIT — see [LICENSE](LICENSE).
+
+<sub>`mcp-name: io.github.harshitAgr/codabench-mcp`</sub>
