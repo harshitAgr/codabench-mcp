@@ -41,6 +41,12 @@ The response is `{"token": "..."}`.
 ## Install
 
 ```bash
+uvx codabench-mcp
+```
+
+To run the bleeding-edge `main` branch instead of the last release:
+
+```bash
 uvx --from git+https://github.com/harshitAgr/codabench-mcp codabench-mcp
 ```
 
@@ -62,11 +68,7 @@ uv run codabench-mcp  # requires CODABENCH_API_TOKEN
   "mcpServers": {
     "codabench": {
       "command": "uvx",
-      "args": [
-        "--from",
-        "git+https://github.com/harshitAgr/codabench-mcp",
-        "codabench-mcp"
-      ],
+      "args": ["codabench-mcp"],
       "env": {
         "CODABENCH_API_TOKEN": "paste-your-token-here"
       }
@@ -80,7 +82,7 @@ uv run codabench-mcp  # requires CODABENCH_API_TOKEN
 ```bash
 claude mcp add codabench \
   --env CODABENCH_API_TOKEN=paste-your-token-here \
-  -- uvx --from git+https://github.com/harshitAgr/codabench-mcp codabench-mcp
+  -- uvx codabench-mcp
 ```
 
 ## Environment variables
