@@ -8,7 +8,21 @@ license = { text = "MIT" }
 authors = [
     { name = "Harshit Agrawal", email = "harshitbme@gmail.com" },
 ]
-urls = { Homepage = "https://github.com/harshitAgr/codabench-mcp", Repository = "https://github.com/harshitAgr/codabench-mcp" }
+keywords = ["mcp", "codabench", "model-context-protocol", "benchmarks", "claude", "llm"]
+classifiers = [
+    "Development Status :: 3 - Alpha",
+    "Intended Audience :: Developers",
+    "Intended Audience :: Science/Research",
+    "License :: OSI Approved :: MIT License",
+    "Operating System :: OS Independent",
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.11",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Scientific/Engineering",
+    "Topic :: Software Development :: Libraries :: Python Modules",
+]
+urls = { Homepage = "https://github.com/harshitAgr/codabench-mcp", Repository = "https://github.com/harshitAgr/codabench-mcp", Issues = "https://github.com/harshitAgr/codabench-mcp/issues" }
 dependencies = [
     "mcp>=1.2.0",
     "httpx>=0.27.0",
