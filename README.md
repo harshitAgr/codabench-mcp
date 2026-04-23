@@ -41,13 +41,13 @@ The response is `{"token": "..."}`.
 ## Install
 
 ```bash
-uvx --from git+ssh://git@github.com/harshitAgr/codabench-mcp codabench-mcp
+uvx --from git+https://github.com/harshitAgr/codabench-mcp codabench-mcp
 ```
 
 Or for development:
 
 ```bash
-git clone git@github.com:harshitAgr/codabench-mcp.git
+git clone https://github.com/harshitAgr/codabench-mcp.git
 cd codabench-mcp
 uv sync
 uv run codabench-mcp  # requires CODABENCH_API_TOKEN
@@ -64,7 +64,7 @@ uv run codabench-mcp  # requires CODABENCH_API_TOKEN
       "command": "uvx",
       "args": [
         "--from",
-        "git+ssh://git@github.com/harshitAgr/codabench-mcp",
+        "git+https://github.com/harshitAgr/codabench-mcp",
         "codabench-mcp"
       ],
       "env": {
@@ -80,7 +80,7 @@ uv run codabench-mcp  # requires CODABENCH_API_TOKEN
 ```bash
 claude mcp add codabench \
   --env CODABENCH_API_TOKEN=paste-your-token-here \
-  -- uvx --from git+ssh://git@github.com/harshitAgr/codabench-mcp codabench-mcp
+  -- uvx --from git+https://github.com/harshitAgr/codabench-mcp codabench-mcp
 ```
 
 ## Environment variables
@@ -103,4 +103,4 @@ uv run ruff format --check .               # format check
 
 ## License
 
-No license declared — private repository.
+MIT — see [LICENSE](LICENSE).
