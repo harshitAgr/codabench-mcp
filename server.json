@@ -1,0 +1,29 @@
+{
+  "$schema": "https://static.modelcontextprotocol.io/schemas/2025-12-11/server.schema.json",
+  "name": "io.github.harshitAgr/codabench-mcp",
+  "description": "MCP server for the Codabench REST API — drives a full ML-benchmark participant workflow.",
+  "repository": {
+    "url": "https://github.com/harshitAgr/codabench-mcp",
+    "source": "github"
+  },
+  "version": "0.1.1",
+  "packages": [
+    {
+      "registryType": "pypi",
+      "identifier": "codabench-mcp",
+      "version": "0.1.1",
+      "transport": {
+        "type": "stdio"
+      },
+      "environmentVariables": [
+        {
+          "name": "CODABENCH_API_TOKEN",
+          "description": "DRF token for Codabench. Obtain via https://www.codabench.org/api/docs/ > api-token-auth > Try it out.",
+          "isRequired": true,
+          "isSecret": true,
+          "format": "string"
+        }
+      ]
+    }
+  ]
+}
