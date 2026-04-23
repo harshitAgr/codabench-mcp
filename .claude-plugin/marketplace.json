@@ -1,0 +1,27 @@
+{
+  "name": "codabench-mcp",
+  "owner": {
+    "name": "Harshit Agrawal",
+    "email": "harshitbme@gmail.com"
+  },
+  "metadata": {
+    "description": "MCP server for the Codabench ML-benchmark REST API."
+  },
+  "plugins": [
+    {
+      "name": "codabench-mcp",
+      "source": "./",
+      "description": "Drive Codabench ML-benchmark workflows from Claude Code: search competitions, download datasets, submit, poll, read leaderboards.",
+      "version": "0.1.1",
+      "author": {
+        "name": "Harshit Agrawal",
+        "email": "harshitbme@gmail.com"
+      },
+      "homepage": "https://github.com/harshitAgr/codabench-mcp",
+      "repository": "https://github.com/harshitAgr/codabench-mcp",
+      "license": "MIT",
+      "keywords": ["mcp", "codabench", "benchmarks", "ml", "competitions"],
+      "category": "productivity"
+    }
+  ]
+}
