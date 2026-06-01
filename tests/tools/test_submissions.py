@@ -75,10 +75,10 @@ async def test_submit_to_phase_runs_full_upload_flow(mcp, client, tmp_path, resp
 
     sassy_url = "https://storage.googleapis.com/bucket/file?sig=xyz"
 
-    create_data = respx_mock.post("/api/data/").mock(
+    create_data = respx_mock.post("/api/datasets/").mock(
         return_value=httpx.Response(201, json={"key": "new-key-abc", "sassy_url": sassy_url})
     )
-    finalize = respx_mock.put("/api/data/upload_completed/new-key-abc/").mock(
+    finalize = respx_mock.put("/api/datasets/completed/new-key-abc/").mock(
         return_value=httpx.Response(200, json={"ok": True})
     )
     create_sub = respx_mock.post("/api/submissions/").mock(
@@ -116,6 +116,12 @@ async def test_submit_to_phase_runs_full_upload_flow(mcp, client, tmp_path, resp
     assert body["phase"] == 10
     assert body["tasks"] == [7, 8]
     assert body["description"] == "first try"
+
+    data_req = create_data.calls.last.request
+    data_body = json.loads(data_req.content)
+    assert data_body["type"] == "submission"
+    assert data_body["request_sassy_file_name"] == "model.zip"
+    assert data_body["file_size"] == len(b"PK\x03\x04fake-zip")
 
 
 async def test_submit_to_phase_rejects_missing_bundle(mcp, client):

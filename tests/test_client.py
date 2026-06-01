@@ -69,6 +69,20 @@ async def test_put_absolute_url_bypasses_base_url_and_auth(client, respx_mock):
         assert sent.content == b"payload"
 
 
+async def test_put_absolute_mirrors_signed_content_type(client):
+    import respx as _respx
+
+    url = (
+        "https://minio.example/bucket/best_v1.zip"
+        "?AWSAccessKeyId=k&Signature=s&content-type=application%2Fzip&Expires=1"
+    )
+    with _respx.mock(assert_all_called=True) as m:
+        route = m.put(url).mock(return_value=httpx.Response(200))
+        await client.put_absolute(url, content=b"PK\x03\x04")
+        sent = route.calls.last.request
+        assert sent.headers["content-type"] == "application/zip"
+
+
 async def test_retry_once_on_5xx(client, respx_mock):
     route = respx_mock.get("/api/competitions/").mock(
         side_effect=[

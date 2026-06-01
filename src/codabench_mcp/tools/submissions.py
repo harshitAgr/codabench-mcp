@@ -1,4 +1,4 @@
-"""Submission tools: list, get, logs, submit (3-step), poll."""
+"""Submission tools: list, get, logs, submit (4-step), poll."""
 
 from __future__ import annotations
 
@@ -34,8 +34,8 @@ def register(mcp: FastMCP, client: CodabenchClient) -> None:
     @mcp.tool(
         description=(
             "Submit a zipped model bundle to a competition phase. Performs "
-            "Codabench's 3-step upload: POST /api/data/, PUT to signed URL, "
-            "PUT /api/data/upload_completed/, POST /api/submissions/."
+            "Codabench's 4-step upload: POST /api/datasets/, PUT to signed URL, "
+            "PUT /api/datasets/completed/<key>/, POST /api/submissions/."
         )
     )
     async def submit_to_phase(
@@ -56,13 +56,16 @@ def register(mcp: FastMCP, client: CodabenchClient) -> None:
 
         bundle_bytes = bundle.read_bytes()
 
-        # Step 1: create Data record
+        # Step 1: create Data record — returns the presigned PUT URL ("sassy_url").
+        # `request_sassy_file_name` (write-only) is what makes the backend mint
+        # that URL. `file_size` is required by the view's create() for the storage
+        # quota check — it is NOT in the OPTIONS field list, only enforced in code.
         data_record = await client.post(
-            "/api/data/",
+            "/api/datasets/",
             json={
                 "type": "submission",
+                "request_sassy_file_name": bundle.name,
                 "file_size": len(bundle_bytes),
-                "filename": bundle.name,
             },
         )
         key = data_record["key"]
@@ -72,7 +75,7 @@ def register(mcp: FastMCP, client: CodabenchClient) -> None:
         await client.put_absolute(sassy_url, content=bundle_bytes)
 
         # Step 3: finalize upload
-        await client.put(f"/api/data/upload_completed/{key}/")
+        await client.put(f"/api/datasets/completed/{key}/")
 
         # Step 4: create submission referencing the uploaded data key
         body: dict[str, Any] = {"data": key, "phase": phase_id}

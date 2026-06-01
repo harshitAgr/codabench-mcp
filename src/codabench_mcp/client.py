@@ -99,12 +99,26 @@ class CodabenchClient:
         return resp.json() if resp.content else None
 
     async def put_absolute(self, url: str, *, content: bytes) -> None:
-        """PUT raw bytes to an absolute URL (e.g. GCS signed URL).
+        """PUT raw bytes to an absolute signed URL (e.g. S3/minio presigned URL).
 
         No Authorization header is attached — the signed URL carries auth.
+
+        S3/minio v2 presigned PUT URLs fold the expected ``Content-Type`` into
+        the signed string and echo it back as a ``content-type`` query param.
+        The request must send that exact header or the upload is rejected with
+        ``SignatureDoesNotMatch`` — so mirror it onto the request.
         """
+        from urllib.parse import parse_qs, urlsplit
+
+        headers: dict[str, str] = {}
+        qs = parse_qs(urlsplit(url).query)
+        content_type = next(
+            (v[0] for k, v in qs.items() if k.lower() == "content-type" and v), None
+        )
+        if content_type:
+            headers["Content-Type"] = content_type
         try:
-            resp = await self._unauth_client.put(url, content=content)
+            resp = await self._unauth_client.put(url, content=content, headers=headers or None)
         except httpx.HTTPError as exc:
             raise CodabenchToolError(f"Network error on PUT {url}: {exc}") from exc
         if resp.status_code >= 400:
