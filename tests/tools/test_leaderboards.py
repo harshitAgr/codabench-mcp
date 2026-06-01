@@ -26,15 +26,34 @@ def _get_tool(mcp: FastMCP, name: str):
 
 
 async def test_get_leaderboard(mcp, client, respx_mock):
-    respx_mock.get("/api/leaderboards/", params={"phase": "10"}).mock(
+    # Resolves phase -> leaderboard id, then fetches the leaderboard detail.
+    respx_mock.get("/api/phases/10/").mock(
+        return_value=httpx.Response(200, json={"id": 10, "leaderboard": 555})
+    )
+    respx_mock.get("/api/leaderboards/555/").mock(
         return_value=httpx.Response(
-            200, json={"results": [{"rank": 1, "user": "alice", "score": 0.95}]}
+            200,
+            json={
+                "submissions": [
+                    {"owner": "alice", "scores": [{"column_key": "Task1_DSC", "score": "0.95"}]}
+                ]
+            },
         )
     )
     leaderboards.register(mcp, client)
     tool = _get_tool(mcp, "get_leaderboard")
     result = await tool.fn(phase_id=10)
-    assert "results" in result
+    assert result["submissions"][0]["owner"] == "alice"
+
+
+async def test_get_leaderboard_phase_without_board(mcp, client, respx_mock):
+    respx_mock.get("/api/phases/11/").mock(
+        return_value=httpx.Response(200, json={"id": 11, "leaderboard": None})
+    )
+    leaderboards.register(mcp, client)
+    tool = _get_tool(mcp, "get_leaderboard")
+    result = await tool.fn(phase_id=11)
+    assert result["submissions"] == []
 
 
 async def test_get_my_profile(mcp, client, respx_mock):
